@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddEditActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name" />
+
+        <EditText
+            android:id="@+id/et_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price" />
+
+        <EditText
+            android:id="@+id/et_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description" />
+
+        <EditText
+            android:id="@+id/et_panjang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Panjang" />
+
+        <EditText
+            android:id="@+id/et_power"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Power" />
+
+        <EditText
+            android:id="@+id/et_material"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Material" />
+
+        <EditText
+            android:id="@+id/et_aksi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Aksi" />
+
+        <EditText
+            android:id="@+id/et_jenis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Jenis" />
+
+        <EditText
+            android:id="@+id/et_guides"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Guides" />
+
+        <EditText
+            android:id="@+id/et_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Handle" />
+
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit" />
+
+    </LinearLayout>
+</ScrollView>
