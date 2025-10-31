@@ -1,180 +1,131 @@
 package com.dikaramadani.sumision_akhir_android
 
-import android.content.ContentValues
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.dikaramadani.sumision_akhir_android.databinding.ActivityAddEditBinding
+import java.io.File
+import java.io.FileOutputStream
 
 class AddEditActivity : AppCompatActivity() {
 
-    private lateinit var etName: EditText
-    private lateinit var etPrice: EditText
-    private lateinit var etDescription: EditText
-    private lateinit var etPanjang: EditText
-    private lateinit var etPower: EditText
-    private lateinit var etMaterial: EditText
-    private lateinit var etAksi: EditText
-    private lateinit var etJenis: EditText
-    private lateinit var etGuides: EditText
-    private lateinit var etHandle: EditText
-    private lateinit var btnSubmit: Button
-
-    private var isEdit = false
-    private var joran: Joran? = null
+    private lateinit var binding: ActivityAddEditBinding
     private lateinit var dbHelper: DatabaseHelper
+    private var joran: Joran? = null
+    private var imagePath: String? = null
 
     companion object {
         const val EXTRA_JORAN = "extra_joran"
     }
 
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            imagePath = saveImageToInternalStorage(it)
+            binding.ivPhoto.setImageURI(it)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_edit)
-
-        etName = findViewById(R.id.et_name)
-        etPrice = findViewById(R.id.et_price)
-        etDescription = findViewById(R.id.et_description)
-        etPanjang = findViewById(R.id.et_panjang)
-        etPower = findViewById(R.id.et_power)
-        etMaterial = findViewById(R.id.et_material)
-        etAksi = findViewById(R.id.et_aksi)
-        etJenis = findViewById(R.id.et_jenis)
-        etGuides = findViewById(R.id.et_guides)
-        etHandle = findViewById(R.id.et_handle)
-        btnSubmit = findViewById(R.id.btn_submit)
+        binding = ActivityAddEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         dbHelper = DatabaseHelper(this)
 
-        joran = intent.getParcelableExtra(EXTRA_JORAN)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            joran = intent.getParcelableExtra(EXTRA_JORAN, Joran::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            joran = intent.getParcelableExtra(EXTRA_JORAN)
+        }
+
         if (joran != null) {
-            isEdit = true
-            btnSubmit.text = "Update"
-            joran?.let { 
-                etName.setText(it.name)
-                etPrice.setText(it.price)
-                etDescription.setText(it.description)
-                etPanjang.setText(it.panjang)
-                etPower.setText(it.power)
-                etMaterial.setText(it.material)
-                etAksi.setText(it.aksi)
-                etJenis.setText(it.jenis)
-                etGuides.setText(it.guides)
-                etHandle.setText(it.handle)
+            supportActionBar?.title = "Edit Joran"
+            binding.etName.setText(joran?.name)
+            binding.etPrice.setText(joran?.price)
+            binding.etDescription.setText(joran?.description)
+            binding.etPanjang.setText(joran?.panjang)
+            binding.etPower.setText(joran?.power)
+            binding.etMaterial.setText(joran?.material)
+            binding.etAksi.setText(joran?.aksi)
+            binding.etJenis.setText(joran?.jenis)
+            binding.etGuides.setText(joran?.guides)
+            binding.etHandle.setText(joran?.handle)
+            if (joran!!.photo.isNotEmpty()){
+                imagePath = joran!!.photo
+                // PERBAIKAN: Tambahkan operator "!!" pada imagePath
+                binding.ivPhoto.setImageURI(Uri.fromFile(File(imagePath!!)))
             }
         } else {
-            btnSubmit.text = "Submit"
+            supportActionBar?.title = "Tambah Joran"
         }
 
-        supportActionBar?.title = if (isEdit) "Edit Joran" else "Add Joran"
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.btnChooseImage.setOnClickListener {
+            galleryLauncher.launch("image/*")
+        }
 
-        btnSubmit.setOnClickListener {
-            submit()
+        binding.btnSave.setOnClickListener {
+            saveJoran()
         }
     }
 
-    private fun submit() {
-        val name = etName.text.toString().trim()
-        val price = etPrice.text.toString().trim()
-        val description = etDescription.text.toString().trim()
-        val panjang = etPanjang.text.toString().trim()
-        val power = etPower.text.toString().trim()
-        val material = etMaterial.text.toString().trim()
-        val aksi = etAksi.text.toString().trim()
-        val jenis = etJenis.text.toString().trim()
-        val guides = etGuides.text.toString().trim()
-        val handle = etHandle.text.toString().trim()
+    private fun saveJoran() {
+        val name = binding.etName.text.toString()
+        val price = binding.etPrice.text.toString()
+        val description = binding.etDescription.text.toString()
+        val panjang = binding.etPanjang.text.toString()
+        val power = binding.etPower.text.toString()
+        val material = binding.etMaterial.text.toString()
+        val aksi = binding.etAksi.text.toString()
+        val jenis = binding.etJenis.text.toString()
+        val guides = binding.etGuides.text.toString()
+        val handle = binding.etHandle.text.toString()
+        val photo = imagePath ?: ""
 
-        if (name.isEmpty()) {
-            etName.error = "Field can not be blank"
-            return
-        }
 
-        val values = ContentValues().apply {
-            put(DatabaseHelper.COLUMN_NAME, name)
-            put(DatabaseHelper.COLUMN_PRICE, price)
-            put(DatabaseHelper.COLUMN_DESCRIPTION, description)
-            put(DatabaseHelper.COLUMN_PANJANG, panjang)
-            put(DatabaseHelper.COLUMN_POWER, power)
-            put(DatabaseHelper.COLUMN_MATERIAL, material)
-            put(DatabaseHelper.COLUMN_AKSI, aksi)
-            put(DatabaseHelper.COLUMN_JENIS, jenis)
-            put(DatabaseHelper.COLUMN_GUIDES, guides)
-            put(DatabaseHelper.COLUMN_HANDLE, handle)
-        }
+        val newJoran = Joran(
+            id = joran?.id ?: 0,
+            name = name,
+            price = price,
+            description = description,
+            photo = photo,
+            panjang = panjang,
+            power = power,
+            material = material,
+            aksi = aksi,
+            jenis = jenis,
+            guides = guides,
+            handle = handle
+        )
 
-        if (isEdit) {
-            val db = dbHelper.writableDatabase
-            val result = db.update(DatabaseHelper.TABLE_NAME, values, "${DatabaseHelper.COLUMN_ID} = ?", arrayOf(joran?.id.toString()))
-            if (result > 0) {
-                setResult(MainActivity.RESULT_UPDATE)
-                finish()
-            } else {
-                Toast.makeText(this, "Failed to update data", Toast.LENGTH_SHORT).show()
-            }
+        if (joran != null) {
+            dbHelper.updateJoran(newJoran)
         } else {
-            val db = dbHelper.writableDatabase
-            val result = db.insert(DatabaseHelper.TABLE_NAME, null, values)
-            if (result > 0) {
-                val newJoran = Joran(id = result.toInt(), name = name, price = price, description = description, photo = R.drawable.ic_launcher_background, panjang = panjang, power = power, material = material, aksi = aksi, jenis = jenis, guides = guides, handle = handle)
-                val intent = Intent()
-                intent.putExtra(EXTRA_JORAN, newJoran)
-                setResult(MainActivity.RESULT_ADD, intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Failed to add data", Toast.LENGTH_SHORT).show()
-            }
+            dbHelper.addJoran(newJoran)
         }
+
+        setResult(Activity.RESULT_OK)
+        finish()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if (isEdit) {
-            menuInflater.inflate(R.menu.menu_form, menu)
-        }
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_delete -> {
-                showDeleteConfirmationDialog()
-                true
-            }
-            android.R.id.home -> {
-                finish()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun showDeleteConfirmationDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Delete Joran")
-        builder.setMessage("Are you sure you want to delete this joran?")
-        builder.setPositiveButton("Yes") { _, _ ->
-            deleteJoran()
-        }
-        builder.setNegativeButton("No") { dialog, _ ->
-            dialog.cancel()
-        }
-        builder.show()
-    }
-
-    private fun deleteJoran() {
-        val db = dbHelper.writableDatabase
-        val result = db.delete(DatabaseHelper.TABLE_NAME, "${DatabaseHelper.COLUMN_ID} = ?", arrayOf(joran?.id.toString()))
-        if (result > 0) {
-            setResult(MainActivity.RESULT_DELETE)
-            finish()
-        } else {
-            Toast.makeText(this, "Failed to delete data", Toast.LENGTH_SHORT).show()
+    private fun saveImageToInternalStorage(uri: Uri): String? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val fileName = "joran_${System.currentTimeMillis()}.jpg"
+            val file = File(filesDir, fileName)
+            val outputStream = FileOutputStream(file)
+            inputStream?.copyTo(outputStream)
+            outputStream.close()
+            inputStream?.close()
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

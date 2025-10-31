@@ -12,71 +12,146 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <EditText
-            android:id="@+id/et_name"
+        <ImageView
+            android:id="@+id/iv_photo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Name" />
-
-        <EditText
-            android:id="@+id/et_price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Price" />
-
-        <EditText
-            android:id="@+id/et_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description" />
-
-        <EditText
-            android:id="@+id/et_panjang"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Panjang" />
-
-        <EditText
-            android:id="@+id/et_power"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Power" />
-
-        <EditText
-            android:id="@+id/et_material"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Material" />
-
-        <EditText
-            android:id="@+id/et_aksi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Aksi" />
-
-        <EditText
-            android:id="@+id/et_jenis"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Jenis" />
-
-        <EditText
-            android:id="@+id/et_guides"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Guides" />
-
-        <EditText
-            android:id="@+id/et_handle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Handle" />
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_background" />
 
         <Button
-            android:id="@+id/btn_submit"
+            android:id="@+id/btn_choose_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Pilih Gambar" />
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit" />
+            android:hint="Nama Joran">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Harga">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Deskripsi">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Panjang">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_panjang"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Power">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_power"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Material">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_material"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Aksi">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_aksi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Jenis">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_jenis"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Guides">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_guides"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Handle">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_handle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Simpan" />
 
     </LinearLayout>
 </ScrollView>

@@ -28,4 +28,15 @@
         android:layout_below="@id/app_bar_layout"
         tools:listitem="@layout/item_row_joran" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/design_default_color_primary"
+        app:tint="@android:color/white" />
+
 </RelativeLayout>

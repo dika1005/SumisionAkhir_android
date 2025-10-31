@@ -32,11 +32,17 @@ class ForgotPasswordActivity : AppCompatActivity() {
             val user = dbHelper.getUserByEmail(email)
 
             if (user != null) {
-                // Jika user ditemukan, pindah ke halaman verifikasi
-                // Kirim data user (terutama username/alamat) untuk verifikasi
+                // ▼▼▼ PASTIKAN BAGIAN INI SUDAH BENAR ▼▼▼
+                // Jika user ditemukan, pindah ke halaman verifikasi.
+
+                // Buat Intent ke VERIFICATION ACTIVITY, bukan ke LoginActivity
                 val intent = Intent(this, VerificationActivity::class.java)
-                intent.putExtra("USER_DATA", user) // Kirim seluruh objek User
+
+                // Kirim seluruh objek User agar bisa diverifikasi di halaman selanjutnya
+                intent.putExtra("USER_DATA", user)
                 startActivity(intent)
+                // ▲▲▲ SELESAI PERBAIKAN ▲▲▲
+
             } else {
                 // Jika user tidak ditemukan
                 Toast.makeText(this, "Email tidak terdaftar", Toast.LENGTH_SHORT).show()

@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     tools:context=".ProfileActivity">
 
+    <!-- 1. AppBar: Bagian atas yang berisi Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -16,63 +20,82 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="About" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
+    <!-- 2. Konten Utama: Semua yang bisa di-scroll -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <LinearLayout
+            <!-- 3. Bagian Avatar dan Nama -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:padding="32dp">
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/img_profile_photo"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:padding="4dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/myprovile"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearance.App.CircleImageView"
-                    app:strokeColor="?attr/colorPrimary"
-                    app:strokeWidth="4dp" />
-
-                <TextView
-                    android:id="@+id/tv_profile_name"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Dika Ramadani"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-                <TextView
-                    android:id="@+id/tv_profile_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="dikabangkok21@gmail.com"
-                    android:textSize="16sp" />
+                    <!-- AVATAR PROFIL -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_profile_avatar"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:src="@drawable/ic_person"
+                        app:civ_border_color="#FF000000"
+                        app:civ_border_width="2dp"
+                        android:layout_marginBottom="16dp"/>
 
-            </LinearLayout>
+                    <!-- TextView untuk NAMA PENGGUNA -->
+                    <TextView
+                        android:id="@+id/tv_profile_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        tools:text="Nama Pengguna" />
 
-        </com.google.android.material.card.MaterialCardView>
+                    <!-- TextView untuk EMAIL -->
+                    <TextView
+                        android:id="@+id/tv_profile_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        tools:text="email.pengguna@example.com" />
 
-    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Anda bisa menambahkan CardView lain di sini untuk informasi tambahan -->
+            <!-- Contoh: Card untuk 'Pengaturan Akun' atau 'Alamat' -->
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- ▼▼▼ TOMBOL EDIT PROFIL (FLOATING ACTION BUTTON) ▼▼▼ -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_edit_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_edit"
+        app:tint="@android:color/white"
+        android:contentDescription="Edit Profil" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
