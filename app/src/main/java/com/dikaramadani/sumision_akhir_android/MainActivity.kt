@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dikaramadani.sumision_akhir_android.databinding.ActivityMainBinding
+import com.google.android.material.chip.Chip
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,10 +20,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listJoranAdapter: ListJoranAdapter
     private val listJoran = ArrayList<Joran>()
     private var isAdmin: Boolean = false
+    private var selectedCategory: String? = "Semua"
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            loadJoran() // Muat ulang data jika Add/Edit/Delete berhasil
+            // Cukup onResume() yang akan menangani pembaruan data
         }
     }
 
@@ -39,7 +41,16 @@ class MainActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
-        // PERUBAHAN: Atur visibilitas tombol FAB berdasarkan role
+        setupUI()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Muat ulang data setiap kali activity kembali aktif
+        loadJoran(selectedCategory)
+    }
+
+    private fun setupUI() {
         if (isAdmin) {
             binding.fabAdd.visibility = View.VISIBLE
         } else {
@@ -53,15 +64,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.rvJoran.layoutManager = LinearLayoutManager(this)
 
-        // PERUBAHAN: Teruskan status admin ke adapter
         listJoranAdapter = ListJoranAdapter(
-            listJoran = listJoran,   // Beri nama untuk argumen pertama
-            isAdmin = isAdmin,       // Beri nama untuk argumen kedua
+            listJoran = listJoran,
+            isAdmin = isAdmin,
             onItemClick = { joran ->
                 val intent = Intent(this@MainActivity, DetailActivity::class.java)
                 intent.putExtra(DetailActivity.EXTRA_JORAN, joran)
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                startActivity(intent)
+                resultLauncher.launch(intent) // Gunakan launcher agar bisa refresh saat kembali
             },
             onEdit = { joran ->
                 val intent = Intent(this@MainActivity, AddEditActivity::class.java)
@@ -70,56 +79,47 @@ class MainActivity : AppCompatActivity() {
             },
             onDelete = { joran ->
                 dbHelper.deleteJoran(joran)
-                loadJoran()
+                loadJoran(selectedCategory)
             }
         )
         binding.rvJoran.adapter = listJoranAdapter
 
-        loadJoran()
+        setupCategoryChips()
     }
 
-
-    private fun loadJoran() {
-        listJoran.clear()
-        val cursor = dbHelper.getAllJoran()
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID))
-            val name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_NAME))
-            val price = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PRICE))
-            val description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION))
-            val photo = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PHOTO))
-            val panjang = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PANJANG))
-            val power = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_POWER))
-            val material = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_MATERIAL))
-            val aksi = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_AKSI))
-            val jenis = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_JENIS))
-            val guides = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_GUIDES))
-            val handle = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_HANDLE))
-
-            listJoran.add(Joran(id, name, price, description, photo, panjang, power, material, aksi, jenis, guides, handle))
+    private fun setupCategoryChips() {
+        binding.categoryChipGroup.setOnCheckedChangeListener { group, checkedId ->
+            val chip: Chip? = group.findViewById(checkedId)
+            selectedCategory = chip?.text.toString()
+            loadJoran(selectedCategory)
         }
-        cursor.close()
+    }
+
+    private fun loadJoran(category: String?) {
+        listJoran.clear()
+        val newList = dbHelper.getAllJoran(category)
+        listJoran.addAll(newList)
         listJoranAdapter.notifyDataSetChanged()
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Pastikan nama file menu Anda adalah "menu_main.xml"
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    // Fungsi untuk memberi aksi saat item menu diklik
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            // Jika item "Profile" diklik
+            R.id.action_cart -> {
+                val intent = Intent(this, CartActivity::class.java)
+                resultLauncher.launch(intent)
+                return true
+            }
             R.id.action_profile -> {
                 val intent = Intent(this, ProfileActivity::class.java)
                 startActivity(intent)
                 return true
             }
-
-            // Jika item "Logout" diklik
             R.id.action_logout -> {
-                // Logika Logout
                 val sharedPreferences = getSharedPreferences("user_session", Context.MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
                 editor.clear()
@@ -129,7 +129,6 @@ class MainActivity : AppCompatActivity() {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
-                // Selesai Logika Logout
                 return true
             }
         }

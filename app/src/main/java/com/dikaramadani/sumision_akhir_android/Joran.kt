@@ -16,5 +16,7 @@ data class Joran(
     val aksi: String,
     val jenis: String,
     val guides: String,
-    val handle: String
+    val handle: String,
+    val category: String,
+    val stok: Int
 ) : Parcelable

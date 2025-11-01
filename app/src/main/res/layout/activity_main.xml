@@ -7,27 +7,95 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- 1. AppBar di bagian atas -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:title="Joran Pancing"
             app:titleTextColor="@android:color/white" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- 2. HorizontalScrollView untuk Chip kategori, di bawah AppBar -->
+    <HorizontalScrollView
+        android:id="@+id/category_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_bar_layout"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/category_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_semua"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:checked="true"
+                android:text="Semua" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_laut"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Laut" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_danau"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Danau" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_sungai"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Sungai" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_galatama"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Galatama" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
+
+    <!-- 3. RecyclerView untuk menampilkan daftar joran, di bawah Chip -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_joran"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/app_bar_layout"
+        android:layout_below="@id/category_scroll_view"
+        android:padding="8dp"
         tools:listitem="@layout/item_row_joran" />
 
+    <!-- 4. FloatingActionButton di pojok kanan bawah -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add"
         android:layout_width="wrap_content"
@@ -35,8 +103,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
+        android:contentDescription="Tambah Joran"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/design_default_color_primary"
         app:tint="@android:color/white" />
 
 </RelativeLayout>

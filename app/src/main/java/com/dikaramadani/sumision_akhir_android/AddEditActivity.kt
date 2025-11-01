@@ -1,11 +1,10 @@
 package com.dikaramadani.sumision_akhir_android
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.dikaramadani.sumision_akhir_android.databinding.ActivityAddEditBinding
@@ -37,6 +36,10 @@ class AddEditActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
 
+        val categories = arrayOf("Laut", "Danau", "Sungai", "Galatama")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        binding.etCategory.setAdapter(adapter)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             joran = intent.getParcelableExtra(EXTRA_JORAN, Joran::class.java)
         } else {
@@ -48,17 +51,20 @@ class AddEditActivity : AppCompatActivity() {
             supportActionBar?.title = "Edit Joran"
             binding.etName.setText(joran?.name)
             binding.etPrice.setText(joran?.price)
+            binding.etStok.setText(joran?.stok.toString()) // Mengisi stok
             binding.etDescription.setText(joran?.description)
             binding.etPanjang.setText(joran?.panjang)
+            // ▼▼▼ MELENGKAPI BAGIAN YANG HILANG SAAT EDIT ▼▼▼
             binding.etPower.setText(joran?.power)
             binding.etMaterial.setText(joran?.material)
             binding.etAksi.setText(joran?.aksi)
             binding.etJenis.setText(joran?.jenis)
             binding.etGuides.setText(joran?.guides)
             binding.etHandle.setText(joran?.handle)
-            if (joran!!.photo.isNotEmpty()){
+            binding.etCategory.setText(joran?.category, false)
+
+            if (joran!!.photo.isNotEmpty()) {
                 imagePath = joran!!.photo
-                // PERBAIKAN: Tambahkan operator "!!" pada imagePath
                 binding.ivPhoto.setImageURI(Uri.fromFile(File(imagePath!!)))
             }
         } else {
@@ -77,7 +83,10 @@ class AddEditActivity : AppCompatActivity() {
     private fun saveJoran() {
         val name = binding.etName.text.toString()
         val price = binding.etPrice.text.toString()
+        val stok = binding.etStok.text.toString().toIntOrNull() ?: 0
         val description = binding.etDescription.text.toString()
+
+        // ▼▼▼ MELENGKAPI SEMUA VARIABEL YANG HILANG ▼▼▼
         val panjang = binding.etPanjang.text.toString()
         val power = binding.etPower.text.toString()
         val material = binding.etMaterial.text.toString()
@@ -85,8 +94,10 @@ class AddEditActivity : AppCompatActivity() {
         val jenis = binding.etJenis.text.toString()
         val guides = binding.etGuides.text.toString()
         val handle = binding.etHandle.text.toString()
-        val photo = imagePath ?: ""
+        // ▲▲▲ SELESAI MELENGKAPI VARIABEL ▲▲▲
 
+        val photo = imagePath ?: ""
+        val category = binding.etCategory.text.toString()
 
         val newJoran = Joran(
             id = joran?.id ?: 0,
@@ -100,7 +111,9 @@ class AddEditActivity : AppCompatActivity() {
             aksi = aksi,
             jenis = jenis,
             guides = guides,
-            handle = handle
+            handle = handle,
+            category = category,
+            stok = stok
         )
 
         if (joran != null) {

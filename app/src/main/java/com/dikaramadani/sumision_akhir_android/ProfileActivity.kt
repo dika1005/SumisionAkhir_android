@@ -3,9 +3,9 @@ package com.dikaramadani.sumision_akhir_android
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,20 +16,16 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var dbHelper: DatabaseHelper
-    private var currentUser: User? = null // PERUBAHAN: Simpan objek user saat ini
+    private var currentUser: User? = null
 
-    // ▼▼▼ LANGKAH 1: Siapkan ActivityResultLauncher ▼▼▼
     private val editProfileLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // Blok ini akan dijalankan saat kembali dari EditProfileActivity
         if (result.resultCode == RESULT_OK) {
-            // Jika hasilnya OK (artinya ada perubahan), muat ulang data pengguna
             loadAndDisplayUserData()
             Toast.makeText(this, "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
         }
     }
-    // ▲▲▲ Selesai Langkah 1 ▲▲▲
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,22 +36,22 @@ class ProfileActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbarProfile)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Profil Saya"
+        supportActionBar?.title = "Profil"
 
         loadAndDisplayUserData()
 
-        // ▼▼▼ LANGKAH 2: Beri aksi pada tombol FAB Edit ▼▼▼
-        binding.fabEditProfile.setOnClickListener {
-            // Pastikan data pengguna sudah dimuat sebelum pindah
+        binding.fabEditProfile.setOnClickListener { 
             currentUser?.let { user ->
                 val intent = Intent(this, EditProfileActivity::class.java)
-                // Kirim seluruh objek user ke EditProfileActivity
                 intent.putExtra("USER_TO_EDIT", user)
-                // Gunakan launcher untuk memulai activity
                 editProfileLauncher.launch(intent)
             }
         }
-        // ▲▲▲ Selesai Langkah 2 ▲▲▲
+
+        binding.btnTransactionHistory.setOnClickListener { 
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun loadAndDisplayUserData() {
@@ -63,23 +59,30 @@ class ProfileActivity : AppCompatActivity() {
         val userEmail = sharedPreferences.getString("USER_EMAIL", null)
 
         if (userEmail != null) {
-            // Simpan hasil pencarian user ke properti kelas
             currentUser = dbHelper.getUserByEmail(userEmail)
 
-            // Tampilkan data jika user ditemukan
             currentUser?.let { user ->
+                supportActionBar?.title = user.username
                 binding.tvProfileName.text = user.username
-                binding.tvProfileDescription.text = user.email
-
-                // PERUBAHAN: Logika untuk menampilkan foto profil
-                // (Ini akan kita lengkapi setelah kolom foto ditambahkan ke DB)
+                binding.tvProfileEmail.text = user.email
+                binding.tvProfileAddress.text = if (user.alamat.isNotEmpty()) user.alamat else "Alamat belum diatur"
 
                 if (user.photo.isNotEmpty()) {
-                    binding.ivProfileAvatar.setImageURI(Uri.fromFile(File(user.photo)))
+                    val photoUri = Uri.fromFile(File(user.photo))
+                    binding.ivProfileAvatar.setImageURI(photoUri)
+                    binding.ivProfileHeader.setImageURI(photoUri)
                 } else {
                     binding.ivProfileAvatar.setImageResource(R.drawable.ic_person)
+                    binding.ivProfileHeader.setImageResource(R.drawable.bg_profile_header)
                 }
 
+                // LOGIKA UNTUK MENAMPILKAN/MENYEMBUNYIKAN TOMBOL HISTORY
+                if (user.role == "admin") {
+                    binding.btnTransactionHistory.visibility = View.VISIBLE
+                    binding.btnTransactionHistory.text = "Kelola Riwayat Transaksi"
+                } else {
+                    binding.btnTransactionHistory.visibility = View.GONE
+                }
             }
         }
     }

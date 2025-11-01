@@ -4,11 +4,12 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
+import com.dikaramadani.sumision_akhir_android.databinding.ItemRowJoranBinding
 import java.io.File
 
 class ListJoranAdapter(
@@ -20,57 +21,53 @@ class ListJoranAdapter(
 ) : RecyclerView.Adapter<ListJoranAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_row_joran, parent, false)
-        return ListViewHolder(view)
+        val binding = ItemRowJoranBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ListViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val joran = listJoran[position]
-        if (joran.photo.isNotEmpty()) {
-            holder.imgPhoto.setImageURI(Uri.fromFile(File(joran.photo)))
-        } else {
-            holder.imgPhoto.setImageResource(R.drawable.ic_launcher_background)
-        }
-        holder.tvName.text = joran.name
-        holder.tvDescription.text = joran.description
-        holder.itemView.setOnClickListener {
-            onItemClick(joran)
-        }
-        holder.itemView.setOnLongClickListener {
-            showPopupMenu(holder.itemView, joran)
-            true
-        }
-    }
-
-    private fun showPopupMenu(view: View, joran: Joran) {
-        val popupMenu = PopupMenu(view.context, view)
-        popupMenu.inflate(R.menu.menu_item)
-        popupMenu.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_edit -> {
-                    onEdit(joran)
-                    true
-                }
-                R.id.action_delete_item -> {
-                    AlertDialog.Builder(view.context)
-                        .setTitle("Hapus Joran")
-                        .setMessage("Apakah Anda yakin ingin menghapus item ini?")
-                        .setPositiveButton("Ya") { _, _ -> onDelete(joran) }
-                        .setNegativeButton("Tidak", null)
-                        .show()
-                    true
-                }
-                else -> false
-            }
-        }
-        popupMenu.show()
+        holder.bind(joran)
     }
 
     override fun getItemCount(): Int = listJoran.size
 
-    class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imgPhoto: ImageView = itemView.findViewById(R.id.img_item_photo)
-        val tvName: TextView = itemView.findViewById(R.id.tv_item_name)
-        val tvDescription: TextView = itemView.findViewById(R.id.tv_item_description)
+    inner class ListViewHolder(private val binding: ItemRowJoranBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(joran: Joran) {
+            binding.tvItemName.text = joran.name
+            binding.tvItemPrice.text = joran.price
+            binding.tvItemStock.text = "Stok: ${joran.stok}"
+
+            if (joran.photo.isNotEmpty()) {
+                binding.ivItemPhoto.setImageURI(Uri.fromFile(File(joran.photo)))
+            } else {
+                binding.ivItemPhoto.setImageResource(R.drawable.ic_launcher_background) // Gambar default
+            }
+
+            itemView.setOnClickListener {
+                onItemClick(joran)
+            }
+
+            if (isAdmin) {
+                binding.btnEdit.visibility = View.VISIBLE
+                binding.btnDelete.visibility = View.VISIBLE
+
+                binding.btnEdit.setOnClickListener {
+                    onEdit(joran)
+                }
+
+                binding.btnDelete.setOnClickListener {
+                    AlertDialog.Builder(itemView.context)
+                        .setTitle("Hapus Joran")
+                        .setMessage("Apakah Anda yakin ingin menghapus ${joran.name}?")
+                        .setPositiveButton("Ya") { _, _ -> onDelete(joran) }
+                        .setNegativeButton("Tidak", null)
+                        .show()
+                }
+            } else {
+                binding.btnEdit.visibility = View.GONE
+                binding.btnDelete.visibility = View.GONE
+            }
+        }
     }
 }
